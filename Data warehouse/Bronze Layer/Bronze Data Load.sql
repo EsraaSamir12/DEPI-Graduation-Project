@@ -15,9 +15,38 @@ BEGIN
         TRUNCATE TABLE cucasDWH.Bronze.Applicant;
         PRINT '>> Inserting data into Bronze.Applicant'
         SET @Start_Time = GETDATE();
-        INSERT INTO cucasDWH.Bronze.Applicant
-        SELECT *
-        FROM cucasDB.dbo.Applicant;
+       INSERT INTO cucasDWH.Bronze.Applicant (
+       FullName,
+       Nationality,
+       CurrentLevel,
+       YearOfStudy,
+       FinancialSupportNeeded,
+       FamilyIncome,
+       InstitutionName,
+       Major,
+       Email,
+       DOB,
+       Gender,
+       GPA,
+       Country,
+       City
+      )
+   SELECT 
+        FullName,
+         Nationality,
+         CurrentLevel,
+         YearOfStudy,
+         FinancialSupportNeeded,
+         FamilyIncome,
+         InstitutionName,
+          Major,
+          Email,
+          DOB,
+          Gender,
+          GPA,
+          Country,
+          City
+    FROM cucasDB.dbo.Applicant;
         SET @End_Time = GETDATE();
         PRINT '>> Load Duration: ' + CAST(DATEDIFF(SECOND,@Start_Time,@End_Time) AS NVARCHAR) + ' seconds';
         PRINT '-----------------------------'
@@ -214,5 +243,6 @@ BEGIN
 		PRINT '-----------------------------------------'
     END CATCH
 END
+
 
 Exec Bronze.bronze_Load

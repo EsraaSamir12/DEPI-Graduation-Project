@@ -1,0 +1,14 @@
+ExamTypeID,ExamName,Provider
+1,HSK Level 1,Confucius Institute
+2,HSK Level 2,Confucius Institute
+3,HSK Level 3,Confucius Institute
+4,HSK Level 4,Confucius Institute
+5,HSK Level 5,Confucius Institute
+6,HSK Level 6,Confucius Institute
+7,TOEFL,ETS
+8,IELTS,British Council
+9,Gaokao (Chinese College Entrance),Ministry of Education
+10,SAT,College Board
+11,University Admission Test,Various Universities
+12,HSK Level 7,Confucius Institute
+13,HSK Level 8,Confucius Institute

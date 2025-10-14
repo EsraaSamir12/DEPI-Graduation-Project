@@ -4,7 +4,7 @@ USE cucasDB
 
 CREATE TABLE Applicant (
     ApplicantID INT IDENTITY(1,1) PRIMARY KEY,
-    FullName NVARCHAR(MAX) NOT NULL,                        
+    FullName NVARCHAR(MAX) NOT NULL,  
     Nationality NVARCHAR(MAX) NULL,
     CurrentLevel NVARCHAR(MAX) NULL,
     YearOfStudy INT,
@@ -17,7 +17,8 @@ CREATE TABLE Applicant (
     Gender NVARCHAR(6),
     GPA DECIMAL(3,2),
     Country NVARCHAR(MAX) NULL,
-    City NVARCHAR(MAX) NULL
+    City NVARCHAR(MAX) NULL,
+    Password NVARCHAR(MAX) NOT NULL
 );
 
 

@@ -1,0 +1,101 @@
+SupportID,SupportType,MaxAmount,Duration,Recurring
+1,Books/Materials,7742,6 Months,No
+2,Books/Materials,7838,1 Semester,Yes
+3,Living Expenses,14253,6 Months,No
+4,Books/Materials,14050,1 Academic Year,No
+5,Health Insurance,12627,6 Months,Yes
+6,Accommodation Grant,7435,1 Trip,No
+7,Health Insurance,7899,1 Academic Year,Yes
+8,Sports Grant,14949,6 Months,No
+9,Accommodation Grant,8401,6 Months,No
+10,Sports Grant,13918,1 Event,No
+11,Conference Fee,2191,1 Semester,No
+12,Conference Fee,5580,1 Trip,No
+13,Accommodation Grant,10683,1 Trip,Yes
+14,Laptop Grant,1406,1 Academic Year,Yes
+15,Accommodation Grant,9291,1 Semester,No
+16,Health Insurance,9039,1 Academic Year,Yes
+17,Tuition Fee,7920,1 Semester,No
+18,Laptop Grant,5266,1 Academic Year,Yes
+19,Sports Grant,7921,1 Event,Yes
+20,Sports Grant,13532,1 Trip,No
+21,Travel Grant,6402,1 Trip,No
+22,Conference Fee,9196,6 Months,Yes
+23,Accommodation Grant,7119,1 Event,Yes
+24,Laptop Grant,5172,1 Event,No
+25,Living Expenses,5152,1 Trip,No
+26,Sports Grant,3870,1 Trip,Yes
+27,Health Insurance,828,1 Event,Yes
+28,Accommodation Grant,13189,1 Academic Year,No
+29,Travel Grant,4090,6 Months,Yes
+30,Accommodation Grant,10204,1 Trip,Yes
+31,Tuition Fee,5645,1 Trip,No
+32,Accommodation Grant,11013,1 Trip,Yes
+33,Laptop Grant,1449,1 Trip,No
+34,Sports Grant,3961,1 Trip,Yes
+35,Books/Materials,2926,6 Months,No
+36,Health Insurance,1401,1 Trip,Yes
+37,Living Expenses,596,1 Semester,Yes
+38,Accommodation Grant,4340,1 Semester,Yes
+39,Health Insurance,3041,1 Academic Year,No
+40,Health Insurance,9453,1 Semester,No
+41,Tuition Fee,14333,1 Semester,No
+42,Tuition Fee,6790,1 Academic Year,Yes
+43,Conference Fee,4249,1 Semester,Yes
+44,Travel Grant,8132,6 Months,No
+45,Research Grant,5512,6 Months,Yes
+46,Tuition Fee,11032,1 Trip,Yes
+47,Books/Materials,4022,1 Semester,Yes
+48,Laptop Grant,12578,1 Trip,Yes
+49,Research Grant,9803,1 Event,Yes
+50,Research Grant,13290,1 Semester,No
+51,Accommodation Grant,5473,1 Semester,No
+52,Living Expenses,9816,1 Event,Yes
+53,Sports Grant,6238,1 Academic Year,Yes
+54,Research Grant,1933,1 Event,Yes
+55,Laptop Grant,13085,6 Months,No
+56,Accommodation Grant,2414,1 Academic Year,No
+57,Research Grant,3608,6 Months,No
+58,Travel Grant,7905,1 Event,No
+59,Sports Grant,5790,1 Event,Yes
+60,Research Grant,7569,1 Trip,No
+61,Research Grant,8809,6 Months,Yes
+62,Travel Grant,2822,1 Semester,Yes
+63,Living Expenses,3680,1 Academic Year,Yes
+64,Laptop Grant,3047,6 Months,Yes
+65,Accommodation Grant,12907,1 Academic Year,No
+66,Research Grant,11850,1 Event,Yes
+67,Travel Grant,11428,1 Trip,No
+68,Tuition Fee,13097,1 Academic Year,No
+69,Living Expenses,4976,6 Months,No
+70,Books/Materials,537,6 Months,Yes
+71,Research Grant,13220,1 Academic Year,No
+72,Conference Fee,12673,1 Academic Year,No
+73,Travel Grant,5509,1 Trip,No
+74,Accommodation Grant,5537,1 Trip,No
+75,Sports Grant,570,1 Event,Yes
+76,Health Insurance,7248,1 Trip,No
+77,Books/Materials,5668,1 Event,Yes
+78,Conference Fee,12986,1 Academic Year,Yes
+79,Tuition Fee,7137,1 Trip,Yes
+80,Tuition Fee,11652,6 Months,Yes
+81,Living Expenses,2650,1 Academic Year,Yes
+82,Laptop Grant,8571,1 Semester,No
+83,Sports Grant,5717,1 Trip,Yes
+84,Health Insurance,3828,1 Academic Year,Yes
+85,Books/Materials,5558,1 Semester,No
+86,Books/Materials,6058,1 Academic Year,No
+87,Health Insurance,14737,1 Event,Yes
+88,Tuition Fee,14518,6 Months,Yes
+89,Accommodation Grant,1638,1 Academic Year,Yes
+90,Travel Grant,8733,6 Months,Yes
+91,Living Expenses,4648,6 Months,No
+92,Research Grant,13085,6 Months,No
+93,Travel Grant,687,1 Semester,No
+94,Conference Fee,14908,1 Trip,Yes
+95,Sports Grant,5868,6 Months,No
+96,Research Grant,616,1 Trip,Yes
+97,Living Expenses,6641,6 Months,Yes
+98,Living Expenses,696,1 Event,No
+99,Research Grant,11406,1 Trip,No
+100,Travel Grant,6825,1 Academic Year,No

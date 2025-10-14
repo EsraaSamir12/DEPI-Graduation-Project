@@ -1,0 +1,199 @@
+Create DATABASE cucasDWH
+use cucasDWH
+-- Create Schema
+CREATE SCHEMA Bronze 
+CREATE SCHEMA Silver 
+CREATE SCHEMA Gold 
+
+
+
+-- Create Bronze layer
+
+IF OBJECT_ID('Bronze.Applicant', 'U') IS NOT NULL DROP TABLE Bronze.Applicant;
+CREATE TABLE Bronze.Applicant (
+    ApplicantID INT,
+    FullName NVARCHAR(MAX),                        
+    Nationality NVARCHAR(MAX),
+    CurrentLevel NVARCHAR(MAX),
+    YearOfStudy INT,
+    FinancialSupportNeeded NVARCHAR(4),
+    FamilyIncome DECIMAL(18,2),
+    InstitutionName NVARCHAR(MAX),
+    Major NVARCHAR(MAX),
+    Email NVARCHAR(MAX),
+    DOB DATE,
+    Gender NVARCHAR(6),
+    GPA DECIMAL(3,2),
+    Country NVARCHAR(MAX),
+    City NVARCHAR(MAX)
+);
+
+IF OBJECT_ID('Bronze.University', 'U') IS NOT NULL DROP TABLE Bronze.University;
+CREATE TABLE Bronze.University (
+    Uni_ID INT,
+    University NVARCHAR(MAX),
+    [Location] NVARCHAR(MAX),
+    Rating DECIMAL(3,2)
+);
+
+IF OBJECT_ID('Bronze.FinanceDetails', 'U') IS NOT NULL DROP TABLE Bronze.FinanceDetails;
+CREATE TABLE Bronze.FinanceDetails (
+    FinanceID INT,
+    MinScholarshipCoverageTuition DECIMAL(10,2),
+    MaxScholarshipCoverageTuition DECIMAL(10,2),
+    ScholarshipCoverageAccommodation NVARCHAR(MAX),
+    ScholarshipCoverageLivingExpense NVARCHAR(MAX),
+    MinTuitionApplicantNeedToPay DECIMAL(10,2),
+    MaxTuitionApplicantNeedToPay DECIMAL(10,2),
+    MinApplicantNeedToPayAccommodation DECIMAL(10,2),
+    MaxApplicantNeedToPayAccommodation DECIMAL(10,2),
+    ApplicantNeedToPayAccommodationCategoryType NVARCHAR(MAX),
+    MinApplicantNeedToPayLivingExpense DECIMAL(10,2),
+    MaxApplicantNeedToPayLivingExpense DECIMAL(10,2),
+    LivingExpenseApplicantNeedToPayCategoryType NVARCHAR(MAX),
+    Tuition DECIMAL(10,2),
+    TuitionCategoryType NVARCHAR(MAX),
+    DeadlineForPayment DATE,
+    MinApplicationServiceFeeByDollars DECIMAL(10,2),
+    MaxApplicationServiceFeeByDollars DECIMAL(10,2)
+);
+
+IF OBJECT_ID('Bronze.Scholarship', 'U') IS NOT NULL DROP TABLE Bronze.Scholarship;
+CREATE TABLE Bronze.Scholarship (
+    Schol_ID INT,
+    Uni_ID INT,
+    FinanceID INT,
+    Program NVARCHAR(MAX),
+    TeachingLanguage NVARCHAR(MAX),
+    Degree NVARCHAR(MAX),
+    Duration INT,
+    DurationCategoryType NVARCHAR(MAX),
+    StartingDate DATE,
+    DeadlineForDocuments DATE,
+    StartYear INT,
+    StartMonth INT,
+    Category NVARCHAR(MAX)
+);
+
+IF OBJECT_ID('Bronze.Recommender', 'U') IS NOT NULL DROP TABLE Bronze.Recommender;
+CREATE TABLE Bronze.Recommender (
+    RecommenderID INT,
+    FullName NVARCHAR(MAX),
+    Email NVARCHAR(MAX),
+    Position NVARCHAR(MAX),
+    Institution NVARCHAR(MAX)
+);
+
+IF OBJECT_ID('Bronze.RecommendationLetter', 'U') IS NOT NULL DROP TABLE Bronze.RecommendationLetter;
+CREATE TABLE Bronze.RecommendationLetter (
+    RecommenderID INT,
+    ApplicantID INT,
+    LetterText NVARCHAR(MAX),
+    CanLearnQuickly INT,
+    ProblemSolvingAbility INT,
+    ResearchSkills INT,
+    AcademicPerformance INT
+);
+
+IF OBJECT_ID('Bronze.ExamType', 'U') IS NOT NULL DROP TABLE Bronze.ExamType;
+CREATE TABLE Bronze.ExamType (
+    ExamTypeID INT,
+    ExamName NVARCHAR(255),
+    Provider NVARCHAR(255)
+);
+
+IF OBJECT_ID('Bronze.ExamResult', 'U') IS NOT NULL DROP TABLE Bronze.ExamResult;
+CREATE TABLE Bronze.ExamResult (
+    ExamTypeID INT,
+    ApplicantID INT,
+    ExamDate DATE,
+    Score DECIMAL(5,2),
+    Result NVARCHAR(MAX),
+    IsValid NVARCHAR(MAX)
+);
+
+IF OBJECT_ID('Bronze.Support', 'U') IS NOT NULL DROP TABLE Bronze.Support;
+CREATE TABLE Bronze.Support (
+    SupportID INT,
+    SupportType NVARCHAR(100),
+    MaxAmount DECIMAL(18,2),
+    Duration NVARCHAR(MAX),
+    Recurring NVARCHAR(MAX)
+);
+
+IF OBJECT_ID('Bronze.ApplicantFinancialSupport', 'U') IS NOT NULL DROP TABLE Bronze.ApplicantFinancialSupport;
+CREATE TABLE Bronze.ApplicantFinancialSupport (
+    ApplicantID INT,
+    SupportID INT,
+    RequestedSupportAmount DECIMAL(18,2),
+    SupportReason NVARCHAR(MAX),
+    ApprovalStatus NVARCHAR(MAX)
+);
+
+IF OBJECT_ID('Bronze.Committee', 'U') IS NOT NULL DROP TABLE Bronze.Committee;
+CREATE TABLE Bronze.Committee (
+    CommitteeID INT,
+    CommitteeName NVARCHAR(200)
+);
+
+IF OBJECT_ID('Bronze.CommitteMember', 'U') IS NOT NULL DROP TABLE Bronze.CommitteMember;
+CREATE TABLE Bronze.CommitteMember (
+    ReviewerID INT,
+    Name NVARCHAR(MAX),
+    Email NVARCHAR(MAX),
+    Status NVARCHAR(MAX),
+    CurrentWorkedLoad INT,
+    Institution NVARCHAR(MAX),
+    Position NVARCHAR(MAX),
+    Specialization NVARCHAR(MAX),
+    Department NVARCHAR(MAX),
+    MaxReviewsCapacity INT,
+    YearsOfExperience INT,
+    CommitteeID INT
+);
+
+IF OBJECT_ID('Bronze.Interviewer', 'U') IS NOT NULL DROP TABLE Bronze.Interviewer;
+CREATE TABLE Bronze.Interviewer (
+    InterviewerID INT,
+    Name NVARCHAR(MAX),
+    Position NVARCHAR(MAX),
+    Institution NVARCHAR(MAX),
+    Email NVARCHAR(MAX)
+);
+
+IF OBJECT_ID('Bronze.Interview', 'U') IS NOT NULL DROP TABLE Bronze.Interview;
+CREATE TABLE Bronze.Interview (
+    InterviewerID INT,
+    ApplicantID INT,
+    InterviewDate DATE,
+    Location NVARCHAR(MAX),
+    Result NVARCHAR(MAX)
+);
+
+IF OBJECT_ID('Bronze.Application', 'U') IS NOT NULL DROP TABLE Bronze.Application;
+CREATE TABLE Bronze.Application (
+    ApplicationID INT,
+    ApplicantID INT,
+    ScholID INT,
+    ApplicationDate DATE,
+    CommitteeID INT,
+    Score DECIMAL(5,2),
+    Comment NVARCHAR(MAX),
+    Recommendation NVARCHAR(MAX)
+);
+
+IF OBJECT_ID('Bronze.ApplicationPayment', 'U') IS NOT NULL DROP TABLE Bronze.ApplicationPayment;
+CREATE TABLE Bronze.ApplicationPayment (
+    PaymentID INT,
+    ApplicationID INT,
+    PaymentDate DATE,
+    TuitionPay DECIMAL(18,2),
+    AccommodationPay DECIMAL(18,2),
+    LivingExpensePay DECIMAL(18,2),
+    ServiceFee DECIMAL(18,2),
+    TotalAmount DECIMAL(18,2),
+    PaymentMethod NVARCHAR(50)
+);
+
+
+

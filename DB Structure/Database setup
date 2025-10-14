@@ -1,0 +1,321 @@
+Create database cucasDB
+USE cucasDB
+
+
+CREATE TABLE Applicant (
+    ApplicantID INT IDENTITY(1,1) PRIMARY KEY,
+    FullName NVARCHAR(MAX) NOT NULL,                        
+    Nationality NVARCHAR(MAX) NULL,
+    CurrentLevel NVARCHAR(MAX) NULL,
+    YearOfStudy INT,
+    FinancialSupportNeeded NVARCHAR(4),
+    FamilyIncome DECIMAL(18,2) NULL,
+    InstitutionName NVARCHAR(MAX) NULL,
+    Major NVARCHAR(MAX) NULL,
+    Email NVARCHAR(MAX) NULL,
+    DOB DATE NULL,
+    Gender NVARCHAR(6),
+    GPA DECIMAL(3,2),
+    Country NVARCHAR(MAX) NULL,
+    City NVARCHAR(MAX) NULL
+);
+
+
+
+CREATE TABLE University (
+    Uni_ID INT IDENTITY(1,1) PRIMARY KEY,   
+    University NVARCHAR(MAX),      
+    [Location] NVARCHAR(MAX) ,           
+    Rating DECIMAL(3,2)              
+);
+
+
+CREATE TABLE FinanceDetails (
+    FinanceID INT IDENTITY(1,1) PRIMARY KEY,
+    MinScholarshipCoverageTuition DECIMAL(10,2) NULL,
+    MaxScholarshipCoverageTuition DECIMAL(10,2) NULL,
+    ScholarshipCoverageAccommodation NVARCHAR(MAX),
+    ScholarshipCoverageLivingExpense NVARCHAR(MAX),
+    MinTuitionApplicantNeedToPay DECIMAL(10,2) NULL,
+    MaxTuitionApplicantNeedToPay DECIMAL(10,2) NULL,
+    MinApplicantNeedToPayAccommodation DECIMAL(10,2) NULL,
+    MaxApplicantNeedToPayAccommodation DECIMAL(10,2) NULL,
+    ApplicantNeedToPayAccommodationCategoryType NVARCHAR(MAX) NULL,
+    MinApplicantNeedToPayLivingExpense DECIMAL(10,2) NULL,
+    MaxApplicantNeedToPayLivingExpense DECIMAL(10,2) NULL,
+    LivingExpenseApplicantNeedToPayCategoryType NVARCHAR(MAX) NULL,
+    Tuition DECIMAL(10,2) NULL,
+    TuitionCategoryType NVARCHAR(MAX) NULL,
+    DeadlineForPayment DATE NULL,
+    MinApplicationServiceFeeByDollars DECIMAL(10,2) NULL,
+    MaxApplicationServiceFeeByDollars DECIMAL(10,2) NULL
+);
+
+
+CREATE TABLE Scholarship (
+    Schol_ID INT IDENTITY(1,1) PRIMARY KEY,
+    Uni_ID INT NOT NULL,
+    FinanceID INT NULL,
+    Program NVARCHAR(MAX) NOT NULL,
+    TeachingLanguage NVARCHAR(MAX) NULL,
+    Degree NVARCHAR(MAX) NULL,
+    Duration INT NULL,
+    DurationCategoryType NVARCHAR(MAX) NULL,
+    StartingDate DATE NULL,
+    DeadlineForDocuments DATE NULL,
+    StartYear INT NULL,
+    StartMonth INT NULL,
+    Category NVARCHAR(MAX) NULL,
+    CONSTRAINT FK_Scholarship_University FOREIGN KEY (Uni_ID)
+        REFERENCES University(Uni_ID)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FK_Scholarship_Finance FOREIGN KEY (FinanceID)
+        REFERENCES FinanceDetails(FinanceID)
+        ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+CREATE TABLE Recommender (
+    RecommenderID INT IDENTITY(1,1) PRIMARY KEY,
+    FullName NVARCHAR(MAX) NOT NULL,
+    Email NVARCHAR(MAX) NULL,
+    Position NVARCHAR(MAX) NULL,
+    Institution NVARCHAR(MAX) NULL
+);
+
+
+
+CREATE TABLE RecommendationLetter (
+    RecommenderID INT NOT NULL,
+    ApplicantID INT NOT NULL,
+    LetterText NVARCHAR(MAX) NULL,
+    CanLearnQuickly INT,
+    ProblemSolvingAbility INT,
+    ResearchSkills INT,
+    AcademicPerformance INT,
+    CONSTRAINT PK_Recommendation PRIMARY KEY (RecommenderID, ApplicantID),
+    CONSTRAINT FK_Recommendation_Recommender FOREIGN KEY (RecommenderID)
+        REFERENCES Recommender(RecommenderID)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FK_Recommendation_Applicant FOREIGN KEY (ApplicantID)
+        REFERENCES Applicant(ApplicantID)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+
+
+CREATE TABLE ExamType (
+    ExamTypeID INT IDENTITY(1,1) PRIMARY KEY,
+    ExamName NVARCHAR(255) NOT NULL,
+    Provider NVARCHAR(255) NULL
+);
+
+
+CREATE TABLE ExamResult (
+    ExamTypeID INT NOT NULL,
+    ApplicantID INT NOT NULL,
+    ExamDate DATE,
+    Score DECIMAL(5,2),
+    Result NVARCHAR(MAX),
+    IsValid NVARCHAR(MAX),
+    CONSTRAINT PK_ExamResult PRIMARY KEY (ExamTypeID, ApplicantID),
+    CONSTRAINT FK_ExamResult_ExamType FOREIGN KEY (ExamTypeID)
+        REFERENCES ExamType(ExamTypeID)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FK_ExamResult_Applicant FOREIGN KEY (ApplicantID)
+        REFERENCES Applicant(ApplicantID)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE Support (
+    SupportID INT IDENTITY(1,1) PRIMARY KEY,
+    SupportType NVARCHAR(100) ,
+    MaxAmount DECIMAL(18,2) ,
+    Duration NVARCHAR(MAX) , 
+    Recurring NVARCHAR (MAX)  
+);
+
+CREATE TABLE ApplicantFinancialSupport (
+    ApplicantID INT NOT NULL,
+    SupportID INT NOT NULL,
+    RequestedSupportAmount DECIMAL(18,2) ,
+    SupportReason NVARCHAR(MAX) ,
+    ApprovalStatus NVARCHAR(MAX) , 
+    CONSTRAINT PK_ApplicantSupport PRIMARY KEY (ApplicantID, SupportID),
+    CONSTRAINT FK_ApplicantSupport_Applicant FOREIGN KEY (ApplicantID)
+        REFERENCES Applicant(ApplicantID)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FK_ApplicantSupport_Support FOREIGN KEY (SupportID)
+        REFERENCES Support(SupportID)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE Committee (
+    CommitteeID INT IDENTITY(1,1) PRIMARY KEY,
+    CommitteeName NVARCHAR(200) 
+);
+
+CREATE TABLE CommitteMember (
+    ReviewerID INT IDENTITY(1,1) PRIMARY KEY,
+    Name NVARCHAR(MAX) ,
+    Email NVARCHAR(MAX) ,
+    Status NVARCHAR(MAX) , 
+    CurrentWorkedLoad INT  ,
+    Institution NVARCHAR(MAX) ,
+    Position NVARCHAR(MAX) ,
+    Specialization NVARCHAR(MAX) ,
+    Department NVARCHAR(MAX) ,
+    MaxReviewsCapacity INT ,
+    YearsOfExperience INT ,
+    CommitteeID INT ,
+    CONSTRAINT FK_Reviewer_Committee FOREIGN KEY (CommitteeID)
+        REFERENCES Committee(CommitteeID)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+);
+
+CREATE TABLE Interviewer (
+    InterviewerID INT IDENTITY(1,1) PRIMARY KEY,
+    Name NVARCHAR(MAX) ,
+    Position NVARCHAR(MAX) ,
+    Institution NVARCHAR(MAX) ,
+    Email NVARCHAR(MAX) 
+);
+
+CREATE TABLE Interview (
+    InterviewerID INT NOT NULL,
+    ApplicantID INT NOT NULL,
+    InterviewDate DATE,
+    Location NVARCHAR(MAX) ,
+    Result NVARCHAR(MAX) ,
+    CONSTRAINT PK_Interview PRIMARY KEY (InterviewerID, ApplicantID),
+    CONSTRAINT FK_Interview_Interviewer FOREIGN KEY (InterviewerID)
+        REFERENCES Interviewer(InterviewerID)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FK_Interview_Applicant FOREIGN KEY (ApplicantID)
+        REFERENCES Applicant(ApplicantID)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE Application (
+    ApplicationID INT IDENTITY(1,1) PRIMARY KEY,
+    ApplicantID INT ,
+    ScholID INT , 
+    ApplicationDate DATE,
+    CommitteeID INT  NULL,
+    Score DECIMAL(5,2) ,
+    Comment NVARCHAR(MAX) ,
+    Recommendation NVARCHAR(MAX) ,
+    CONSTRAINT FK_Application_Applicant FOREIGN KEY (ApplicantID)
+        REFERENCES Applicant(ApplicantID)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    CONSTRAINT FK_Application_Committee FOREIGN KEY (CommitteeID)
+        REFERENCES Committee(CommitteeID)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+CREATE TABLE ApplicationPayment (
+    PaymentID INT IDENTITY(1,1) PRIMARY KEY,
+    ApplicationID INT NOT NULL,
+    PaymentDate DATE,
+    TuitionPay DECIMAL(18,2) ,
+    AccommodationPay DECIMAL(18,2) ,
+    LivingExpensePay DECIMAL(18,2) ,
+    ServiceFee DECIMAL(18,2) ,
+    TotalAmount AS (ISNULL(TuitionPay,0) + ISNULL(AccommodationPay,0) + ISNULL(LivingExpensePay,0) + ISNULL(ServiceFee,0)) PERSISTED,
+    PaymentMethod NVARCHAR(50) ,
+    CONSTRAINT FK_ApplicationPayment_Application FOREIGN KEY (ApplicationID)
+        REFERENCES Application(ApplicationID)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+
+CREATE OR ALTER TRIGGER trg_SupportApproval
+ON ApplicantFinancialSupport
+AFTER INSERT
+AS
+BEGIN
+    UPDATE afs
+    SET ApprovalStatus = 
+        CASE 
+            WHEN afs.RequestedSupportAmount <= 0.8 * s.MaxAmount THEN 'Approved'
+            ELSE 'Rejected'
+        END
+    FROM ApplicantFinancialSupport afs
+    INNER JOIN inserted i ON afs.ApplicantID = i.ApplicantID AND afs.SupportID = i.SupportID
+    INNER JOIN Support s ON afs.SupportID = s.SupportID;
+END;
+
+CREATE OR ALTER TRIGGER trg_CheckReviewerCapacity
+ON Application
+AFTER INSERT
+AS
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM CommitteMember cm
+        JOIN Application a ON cm.CommitteeID = a.CommitteeID
+        WHERE cm.CurrentWorkedLoad >= cm.MaxReviewsCapacity
+    )
+    BEGIN
+        RAISERROR('This committee member reached the maximum review capacity!', 16, 1);
+        ROLLBACK TRANSACTION;
+    END
+END;
+
+
+CREATE PROCEDURE GetAcceptedApplicantsByCommittee
+    @CommitteeID INT
+AS
+BEGIN
+    SELECT a.ApplicantID, ap.FullName, a.Score, a.Recommendation
+    FROM Application a
+    JOIN Applicant ap ON a.ApplicantID = ap.ApplicantID
+    WHERE a.CommitteeID = @CommitteeID AND a.Recommendation = 'Accepted';
+END;
+
+CREATE OR ALTER TRIGGER trg_UpdateExamResultStatus
+ON ExamResult
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE er
+    SET 
+        Result = CASE 
+                    WHEN i.Score >= 8 THEN 'Pass'
+                    ELSE 'Fail'
+                 END,
+        IsValid = CASE 
+                    WHEN i.Score >= 8 AND i.ExamDate >= DATEADD(YEAR, -2, GETDATE()) THEN 'Valid'
+                    ELSE 'Invalid'
+                  END
+    FROM ExamResult er
+    INNER JOIN inserted i 
+        ON er.ApplicantID = i.ApplicantID
+       AND er.ExamTypeID = i.ExamTypeID;
+END;
+
+
+CREATE OR ALTER TRIGGER trg_UpdateApplicationRecommendation
+ON Application
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    UPDATE a
+    SET Recommendation = CASE
+                            WHEN i.Score >= 5 THEN 'Accepted'
+                            WHEN I.Score<5 THEN 'Rejected'
+							ELSE 'Pending'
+
+                         END
+    FROM Application a
+    INNER JOIN inserted i 
+        ON a.ApplicationID = i.ApplicationID;
+END;
+
+

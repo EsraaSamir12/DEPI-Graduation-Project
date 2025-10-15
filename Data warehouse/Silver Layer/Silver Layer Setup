@@ -167,7 +167,6 @@ CREATE TABLE Silver.Interviewer (
 -- Interview
 IF OBJECT_ID('Silver.Interview', 'U') IS NOT NULL DROP TABLE Silver.Interview;
 CREATE TABLE Silver.Interview (
-    ID INT,
     InterviewerID INT,
     ApplicantID INT,
     InterviewDate DATE,
@@ -198,6 +197,6 @@ CREATE TABLE Silver.ApplicationPayment (
     AccommodationPay DECIMAL(18,2),
     LivingExpensePay DECIMAL(18,2),
     ServiceFee DECIMAL(18,2),
-    TotalAmount DECIMAL(18,2),
-    PaymentMethod NVARCHAR(50),
+    PaymentMethod NVARCHAR(50)
 );
+

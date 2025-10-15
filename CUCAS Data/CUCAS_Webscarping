@@ -1,1 +1,202 @@
+import requests
+from bs4 import BeautifulSoup, NavigableString, Tag
+import re
+import urllib3
+import time
+import pandas as pd
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+}
+
+
+def clean_text(s: str) -> str:
+    if not s:
+        return ""
+    s = s.replace("\xa0", " ")
+    s = re.sub(r'\s+', ' ', s)
+    return s.strip()
+
+
+def extract_parts_from_tag(tag: Tag) -> list:
+    parts = []
+    current_chunks = []
+    for child in tag.children:
+        if isinstance(child, NavigableString):
+            text = str(child).strip()
+            if text:
+                current_chunks.append(text)
+        elif isinstance(child, Tag):
+            if child.name == "br":
+                segment = " ".join(current_chunks).strip()
+                segment = clean_text(segment)
+                if segment:
+                    parts.append(segment)
+                current_chunks = []
+            elif child.name == "span":
+                if "red" in child.get("class", []):
+                    text = child.get_text(strip=True)
+                    if text:
+                        current_chunks.append(text)
+                else:
+                    continue
+            else:
+                text = child.get_text(" ", strip=True)
+                if text:
+                    current_chunks.append(text)
+    last = " ".join(current_chunks).strip()
+    last = clean_text(last)
+    if last:
+        parts.append(last)
+    return parts
+
+
+defaults = {
+    "Scholarship coverage Tuition": "1",
+    "Scholarship coverage Accommodation": "1",
+    "Scholarship coverage Living Expense": "1",
+    "Applicant need to pay Tuition": "1",
+    "Applicant need to pay Accommodation": "1",
+    "Applicant need to pay Living Expense": "1"
+}
+
+columns = [
+    "University", "Location", "Rating", "Program", "Teaching Language",
+    "Start Date",
+    "Scholarship coverage Tuition", "Scholarship coverage Accommodation", "Scholarship coverage Living Expense",
+    "Applicant need to pay Tuition", "Applicant need to pay Accommodation", "Applicant need to pay Living Expense",
+    "Link", "Degree", "Duration", "Teaching Language (again)",
+    "Starting Date", "Tuition", "Deadline for Payment", "Deadline for Documents",
+    "Application & Service Fee"
+]
+
+scholarships = []
+
+for page_num in range(424, 426):
+    print(f"Processing page {page_num}...")
+    url = f'https://www.cucas.edu.cn/china_scholarships/page={page_num}'
+
+    try:
+        response = requests.get(url, headers=headers, verify=False, timeout=10)
+        soup = BeautifulSoup(response.text, "html.parser")
+    except Exception as e:
+        print(f"Error fetching page {page_num}: {e}")
+        continue
+
+    for uni_div in soup.find_all("div", class_="university"):
+        h6_tag = uni_div.find("h6")
+        university_name = h6_tag.a.text.strip() if h6_tag and h6_tag.a else None
+        if not university_name:
+            continue
+
+        location_tag = uni_div.find("span", class_="map")
+        location = location_tag.text.strip() if location_tag else "Unknown Location"
+
+        rating_tag = uni_div.find("span", class_="star")
+        rating = rating_tag.text.strip() if rating_tag else "No Rating"
+
+        tables = uni_div.find_all("table")
+        for table in tables:
+            for row in table.find_all("tr"):
+                tds = row.find_all("td")
+                if not tds:
+                    continue
+
+                data = {
+                    "University": university_name,
+                    "Location": location,
+                    "Rating": rating,
+                    "Program": "",
+                    "Teaching Language": "",
+                    "Start Date": "",
+                    **defaults,
+                    "Link": "",
+                    "Degree": "",
+                    "Duration": "",
+                    "Teaching Language (again)": "",
+                    "Starting Date": "",
+                    "Tuition": "",
+                    "Deadline for Payment": "",
+                    "Deadline for Documents": "",
+                    "Application & Service Fee": ""
+                }
+
+                for idx, td in enumerate(tds):
+                    if idx == 0:
+                        data["Program"] = td.get_text(strip=True)
+                    elif idx == 1:
+                        data["Teaching Language"] = td.get_text(strip=True)
+                    elif idx == 2:
+                        data["Start Date"] = td.get_text(strip=True)
+                    elif idx == 3:
+                        p_tags = td.find_all("p")
+                        if p_tags:
+                            parts = extract_parts_from_tag(p_tags[0])
+                            if len(parts) >= 1: data["Scholarship coverage Tuition"] = parts[0]
+                            if len(parts) >= 2: data["Scholarship coverage Accommodation"] = parts[1]
+                            if len(parts) >= 3: data["Scholarship coverage Living Expense"] = parts[2]
+                    elif idx == 4:
+                        p_tags = td.find_all("p")
+                        if p_tags:
+                            parts = extract_parts_from_tag(p_tags[0])
+                            if len(parts) >= 1: data["Applicant need to pay Tuition"] = parts[0]
+                            if len(parts) >= 2: data["Applicant need to pay Accommodation"] = parts[1]
+                            if len(parts) >= 3: data["Applicant need to pay Living Expense"] = parts[2]
+                    elif td.text.strip() == "Learn More":
+                        link_tag = td.find("a")
+                        if link_tag and link_tag.get("href"):
+                            text = link_tag["href"].strip()
+                            if text.startswith("/"):
+                                text = text[1:]
+                            full_link = "https://www.cucas.edu.cn/" + text
+                            full_link = re.sub(r'(\d+_\d+).*', r'\1', full_link)
+                            data["Link"] = full_link
+
+                            try:
+                                inner_page = requests.get(full_link, headers=headers, verify=False, timeout=10)
+                                inner_soup = BeautifulSoup(inner_page.text, "html.parser")
+
+                                inner_table = inner_soup.find("table")
+                                row_data = []
+
+                                if inner_table:
+                                    trs = inner_table.find_all("tr")
+                                    for tr in trs:
+                                        tds_inner = tr.find_all("td")
+                                        for td_inner in tds_inner:
+                                            text = td_inner.get_text(" ", strip=True)
+                                            if text:
+                                                row_data.append(text)
+
+                                hei_spans = inner_soup.find_all("span", class_="hei")
+                                hei_texts = [span.get_text(strip=True) for span in hei_spans if span.get_text(strip=True)]
+
+                                red_spans = inner_soup.find_all("span", class_="red")
+                                red_texts = [span.get_text(strip=True) for span in red_spans if span.get_text(strip=True)]
+
+                                if len(row_data) >= 8:
+                                    data["Degree"], data["Duration"], data["Teaching Language (again)"], data["Starting Date"], \
+                                    data["Tuition"], data["Deadline for Payment"], data["Deadline for Documents"], data["Application & Service Fee"] = row_data[:8]
+
+                                if len(hei_texts) >= 1:
+                                    data["Deadline for Payment"] += f" {hei_texts[0]}"
+                                if len(hei_texts) >= 2:
+                                    data["Deadline for Documents"] += f" {hei_texts[1]}"
+
+                                if red_texts:
+                                    data["Tuition"] += " " + " ".join(red_texts)
+
+                            except Exception as e:
+                                data["Link"] = f"Error fetching inner page: {e}"
+
+                scholarships.append([data[col] for col in columns])
+
+    time.sleep(1)
+
+df = pd.DataFrame(scholarships, columns=columns)
+df.to_csv("scholarships_data.csv", index=False, encoding='utf-8-sig')
+
+print(" Extraction completed and saved to scholarships_data.csv")
 

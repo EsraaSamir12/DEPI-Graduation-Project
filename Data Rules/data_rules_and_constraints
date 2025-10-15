@@ -1,0 +1,101 @@
+----------------------------------------------------------------------------------------------------------
+-------------------------------------------------Applicants-----------------------------------------------
+----------------------------------------------------------------------------------------------------------
+
+ApplicantID: unique integer for each applicant.
+Name: full name (3 or 4 parts), must match gender.
+nationality: nationality string (not country name), derived from institution country.
+CurrentLevel: one of {Diploma, Associate Degree, Undergraduate, Postgraduate Diploma, Master, PhD}.
+YearOfStudy: numeric, must fit the chosen CurrentLevel (e.g., Undergraduate 1–4/6, Master 1–2, PhD 1–7).
+FinancialSupportNeeded: "Yes" if FamilyIncome ≤ 10,000, "No" if FamilyIncome ≥ 100,000, otherwise random.
+FamilyIncome: integer ≥ 200, sampled from realistic ranges (low to high income).
+InstitutionName: must belong to the same country as nationality.
+Major: random from an extended majors list (Engineering, Medicine, AI, Business, etc.).
+Email: unique, generated from name + ID, lowercase.
+dob: derived from age, and age must fit CurrentLevel.
+gender: Male/Female, must match the generated name.
+GPA: float between 0 and 4 (exclusive of 0), e.g., 1.5, 2.4, 3.8.
+Diploma age range: 18–22.
+Associate Degree age range: 18–23.
+Undergraduate age range: 19–24.
+Postgraduate Diploma age range: 22–30.
+Master age range: 23–35.
+PhD age range: 27–45.
+For Medicine/Pharmacy undergraduates: allow up to 6 study years.
+YearOfStudy must be numeric and never null.
+GPA must be > 0 and ≤ 4, rounded to 2 decimals.
+Nationality must always be consistent with institution’s country.
+Gender must be consistent with name (no mismatches).
+Names must vary (no repetition), realistic male and female, 3–4 parts.
+Data must look realistic and coherent, not random nonsense.
+
+
+---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------Exam--------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
+
+
+Score–Result relationship:
+If Score < 8 → Result = 'Fail'
+If Score ≥ 8 → Result = 'Pass'
+Validity rules (IsValid):
+If Result = 'Fail' → IsValid = 'Invalid'
+If Result = 'Pass':
+If ExamDate is within the last 2 years from today → IsValid = 'Valid'
+If ExamDate is older than 2 years → IsValid = 'Expired'
+
+Date logic:
+ExamDate must not be in the future.
+All dates must be valid and formatted as YYYY-MM-DD.
+Score value constraints:
+Score must be an integer between 0 and 10.
+No null or missing values allowed.
+Applicant & Exam consistency:
+Each (ApplicantID, ExamTypeID) pair is unique.
+Applicants can have 1 or 2 exams only.
+
+
+----------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------Interviews---------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+
+The applicant can only have an interview if:
+Result = 'Pass'
+IsValid = 'Valid'
+
+The InterviewDate must be:
+After the applicant’s ExamDate
+Within a reasonable period (e.g., within 6 months of ExamDate) if required by the business rule
+Applicants with:
+Fail result →  Not eligible for interview
+Expired exam →  Not eligible for interview
+
+
+----------------------------------------------------------------------------------------------------------------------
+------------------------------------------------Application ----------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+
+
+
+If the applicant did not attend an interview but passed the exam,
+→ their application status is Pending, meaning it is still under review and not yet decided.
+
+If the applicant failed the exam and did not attend an interview,
+→ their application status is Rejected, since failing the exam automatically disqualifies them from further stages.
+
+If the applicant attended an interview and proceeded to the committee evaluation,
+→ they will be Accepted if their final score is 5 or above,
+→ otherwise, they will be Rejected.
+
+
+----------------------------------------------------------------------------------------------------------------------
+------------------------------------------------Financial support ----------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+
+All applicants in this table have officially requested financial support. The approval status depends on the requested amount relative to the maximum allowed amount — requests for small or moderate amounts (less than or equal to 80% of the maximum) are more likely to be approved, while requests exceeding 80% are more likely to be rejected to ensure fair and balanced fund distribution.
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+
+the date sequence is logical for each applicant : 
+The ExamDate occurs after the ApplicationDate by a random period (at least one month).
+The InterviewDate occurs after the ExamDate by a random period (at least two months).

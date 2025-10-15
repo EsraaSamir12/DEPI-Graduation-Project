@@ -379,7 +379,6 @@ BEGIN
             AccommodationPay,
             LivingExpensePay,
             ServiceFee,
-            TotalAmount,
             PaymentMethod
         FROM Bronze.ApplicationPayment;
         SET @End_Time = GETDATE();
@@ -405,3 +404,4 @@ GO
 
 -- Execute
 EXEC Silver.silver_Load;
+

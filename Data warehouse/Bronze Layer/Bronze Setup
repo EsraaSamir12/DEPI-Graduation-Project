@@ -191,7 +191,6 @@ CREATE TABLE Bronze.ApplicationPayment (
     AccommodationPay DECIMAL(18,2),
     LivingExpensePay DECIMAL(18,2),
     ServiceFee DECIMAL(18,2),
-    TotalAmount DECIMAL(18,2),
     PaymentMethod NVARCHAR(50)
 );
 

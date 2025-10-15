@@ -225,7 +225,6 @@ CREATE TABLE ApplicationPayment (
     AccommodationPay DECIMAL(18,2) ,
     LivingExpensePay DECIMAL(18,2) ,
     ServiceFee DECIMAL(18,2) ,
-    TotalAmount AS (ISNULL(TuitionPay,0) + ISNULL(AccommodationPay,0) + ISNULL(LivingExpensePay,0) + ISNULL(ServiceFee,0)) PERSISTED,
     PaymentMethod NVARCHAR(50) ,
     CONSTRAINT FK_ApplicationPayment_Application FOREIGN KEY (ApplicationID)
         REFERENCES Application(ApplicationID)

@@ -16,7 +16,7 @@ CREATE TABLE Silver.Applicant (
     GPA DECIMAL(3,2),
     Country NVARCHAR(MAX),
     City NVARCHAR(MAX),
-	age INT 
+	age int 
 );
 
 -- University
@@ -48,7 +48,7 @@ CREATE TABLE Silver.FinanceDetails (
     TuitionCategoryType NVARCHAR(MAX),
     DeadlineForPayment DATE,
     MinApplicationServiceFeeByDollars DECIMAL(10,2),
-    MaxApplicationServiceFeeByDollars DECIMAL(10,2)
+    MaxApplicationServiceFeeByDollars DECIMAL(10,2),
 );
 
 -- Scholarship
@@ -76,14 +76,15 @@ CREATE TABLE Silver.Recommender (
     FullName NVARCHAR(MAX),
     Email NVARCHAR(MAX),
     Position NVARCHAR(MAX),
-    Institution NVARCHAR(MAX)
+    Institution NVARCHAR(MAX),
 );
 
 -- RecommendationLetter
 IF OBJECT_ID('Silver.RecommendationLetter', 'U') IS NOT NULL DROP TABLE Silver.RecommendationLetter;
 CREATE TABLE Silver.RecommendationLetter (
-    RecommenderID INT,
-    ApplicantID INT,
+    RecommendationID INT ,
+	ApplicationID INT ,
+    RecommenderID INT ,
     LetterText NVARCHAR(MAX),
     CanLearnQuickly INT,
     ProblemSolvingAbility INT,
@@ -96,15 +97,15 @@ IF OBJECT_ID('Silver.ExamType', 'U') IS NOT NULL DROP TABLE Silver.ExamType;
 CREATE TABLE Silver.ExamType (
     ExamTypeID INT,
     ExamName NVARCHAR(255),
-    Provider NVARCHAR(255)
+    Provider NVARCHAR(255),
 );
 
 -- ExamResult
 IF OBJECT_ID('Silver.ExamResult', 'U') IS NOT NULL DROP TABLE Silver.ExamResult;
 CREATE TABLE Silver.ExamResult (
-    ExamTypeID INT,
-    ApplicantID INT,
-	ApplicationID INT NOT NULL,
+    ExamID INT ,
+    ExamTypeID INT ,
+	ApplicationID INT ,
     ExamDate DATE,
     Score DECIMAL(5,2),
     Result NVARCHAR(MAX),
@@ -118,24 +119,25 @@ CREATE TABLE Silver.Support (
     SupportType NVARCHAR(100),
     MaxAmount DECIMAL(18,2),
     Duration NVARCHAR(MAX),
-    Recurring NVARCHAR(MAX)
+    Recurring NVARCHAR(MAX),
 );
 
 -- ApplicantFinancialSupport
 IF OBJECT_ID('Silver.ApplicantFinancialSupport', 'U') IS NOT NULL DROP TABLE Silver.ApplicantFinancialSupport;
 CREATE TABLE Silver.ApplicantFinancialSupport (
-    ApplicantID INT,
+    ApplicantFinancialSupportID INT,
+    ApplicationID INT,
     SupportID INT,
-    RequestedSupportAmount DECIMAL(18,2),
-    SupportReason NVARCHAR(MAX),
-    ApprovalStatus NVARCHAR(MAX)
+    RequestedSupportAmount DECIMAL(18,2) ,
+    SupportReason NVARCHAR(MAX) ,
+    ApprovalStatus NVARCHAR(MAX) 
 );
 
 -- Committee
 IF OBJECT_ID('Silver.Committee', 'U') IS NOT NULL DROP TABLE Silver.Committee;
 CREATE TABLE Silver.Committee (
     CommitteeID INT,
-    CommitteeName NVARCHAR(200)
+    CommitteeName NVARCHAR(200),
 );
 
 -- CommitteMember
@@ -168,12 +170,12 @@ CREATE TABLE Silver.Interviewer (
 -- Interview
 IF OBJECT_ID('Silver.Interview', 'U') IS NOT NULL DROP TABLE Silver.Interview;
 CREATE TABLE Silver.Interview (
-    InterviewerID INT,
-    ApplicantID INT,
-	ApplicationID INT NOT NULL,
+    InterviewID INT ,
+    InterviewerID INT ,
+	ApplicationID INT ,
     InterviewDate DATE,
-    Location NVARCHAR(MAX),
-    Result NVARCHAR(MAX)
+    Location NVARCHAR(MAX) ,
+    Result NVARCHAR(MAX) 
 );
 
 -- Application
@@ -186,7 +188,7 @@ CREATE TABLE Silver.Application (
     CommitteeID INT,
     Score DECIMAL(5,2),
     Comment NVARCHAR(MAX),
-    Recommendation NVARCHAR(MAX)
+    Recommendation NVARCHAR(MAX),
 );
 
 -- ApplicationPayment
@@ -199,5 +201,15 @@ CREATE TABLE Silver.ApplicationPayment (
     AccommodationPay DECIMAL(18,2),
     LivingExpensePay DECIMAL(18,2),
     ServiceFee DECIMAL(18,2),
-    PaymentMethod NVARCHAR(50)
+    PaymentMethod NVARCHAR(50),
 );
+
+
+
+
+
+
+
+
+
+

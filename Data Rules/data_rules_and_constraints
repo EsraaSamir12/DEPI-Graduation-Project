@@ -52,7 +52,7 @@ Score must be an integer between 0 and 10.
 No null or missing values allowed.
 Applicant & Exam consistency:
 Each (ApplicantID, ExamTypeID) pair is unique.
-Applicants can have 1 or 2 exams only.
+Applicants can have 1 or 2 exams .
 
 
 ----------------------------------------------------------------------------------------------------------------------

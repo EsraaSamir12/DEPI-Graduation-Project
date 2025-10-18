@@ -305,23 +305,9 @@ BEGIN
         PRINT '>> Inserting data into Silver.ApplicationPayment';
         SET @Start_Time = GETDATE();
 
-        INSERT INTO Silver.ApplicationPayment (
-            ApplicationID,
-            PaymentDate,
-            TuitionPay,
-            AccommodationPay,
-            LivingExpensePay,
-            ServiceFee,
-            PaymentMethod
-        )
-        SELECT 
-            ApplicationID,
-            PaymentDate,
-            TuitionPay,
-            AccommodationPay,
-            LivingExpensePay,
-            ServiceFee,
-            PaymentMethod
+        
+        INSERT INTO Silver.ApplicationPayment 
+        SELECT *
         FROM Bronze.ApplicationPayment;
 
         SET @End_Time = GETDATE();
@@ -348,5 +334,6 @@ GO
 
 -- Execute procedure
 EXEC Silver.silver_Load;
+
 
 

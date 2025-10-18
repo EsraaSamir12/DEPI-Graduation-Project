@@ -1,6 +1,8 @@
 Create database cucasDB
 USE cucasDB
-
+USE master;
+ALTER DATABASE cucasDB SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+DROP DATABASE cucasDB;
 
 CREATE TABLE Applicant (
     ApplicantID INT IDENTITY(1,1) PRIMARY KEY,
@@ -17,8 +19,7 @@ CREATE TABLE Applicant (
     Gender NVARCHAR(6),
     GPA DECIMAL(3,2),
     Country NVARCHAR(MAX) NULL,
-    City NVARCHAR(MAX) NULL,
-    Password NVARCHAR(MAX) NOT NULL
+    City NVARCHAR(MAX) NULL
 );
 
 
@@ -112,20 +113,24 @@ CREATE TABLE ExamType (
 );
 
 
+
 CREATE TABLE ExamResult (
     ExamTypeID INT NOT NULL,
     ApplicantID INT NOT NULL,
+	ApplicationID INT NOT NULL,
     ExamDate DATE,
     Score DECIMAL(5,2),
     Result NVARCHAR(MAX),
     IsValid NVARCHAR(MAX),
-    CONSTRAINT PK_ExamResult PRIMARY KEY (ExamTypeID, ApplicantID),
+    CONSTRAINT PK_ExamResult PRIMARY KEY (ExamTypeID, ApplicantID,ApplicationID),
     CONSTRAINT FK_ExamResult_ExamType FOREIGN KEY (ExamTypeID)
         REFERENCES ExamType(ExamTypeID)
         ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT FK_ExamResult_Applicant FOREIGN KEY (ApplicantID)
         REFERENCES Applicant(ApplicantID)
-        ON DELETE CASCADE ON UPDATE CASCADE
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FK_ExamResult_Applicantion FOREIGN KEY (ApplicationID)
+        REFERENCES Application(ApplicationID)
 );
 
 CREATE TABLE Support (
@@ -186,16 +191,19 @@ CREATE TABLE Interviewer (
 CREATE TABLE Interview (
     InterviewerID INT NOT NULL,
     ApplicantID INT NOT NULL,
+	ApplicationID INT NOT NULL,
     InterviewDate DATE,
     Location NVARCHAR(MAX) ,
     Result NVARCHAR(MAX) ,
-    CONSTRAINT PK_Interview PRIMARY KEY (InterviewerID, ApplicantID),
+    CONSTRAINT PK_Interview PRIMARY KEY (InterviewerID, ApplicantID,ApplicationID),
     CONSTRAINT FK_Interview_Interviewer FOREIGN KEY (InterviewerID)
         REFERENCES Interviewer(InterviewerID)
         ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT FK_Interview_Applicant FOREIGN KEY (ApplicantID)
         REFERENCES Applicant(ApplicantID)
-        ON DELETE CASCADE ON UPDATE CASCADE
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT FK_Interview_Applicantion FOREIGN KEY (ApplicationID)
+        REFERENCES Application(ApplicationID)
 );
 
 CREATE TABLE Application (
@@ -217,14 +225,15 @@ CREATE TABLE Application (
         ON UPDATE CASCADE
 );
 
+
 CREATE TABLE ApplicationPayment (
     PaymentID INT IDENTITY(1,1) PRIMARY KEY,
     ApplicationID INT NOT NULL,
     PaymentDate DATE,
-    TuitionPay DECIMAL(18,2) ,
-    AccommodationPay DECIMAL(18,2) ,
-    LivingExpensePay DECIMAL(18,2) ,
-    ServiceFee DECIMAL(18,2) ,
+    TuitionPay INT ,
+    AccommodationPay INT ,
+    LivingExpensePay INT ,
+    ServiceFee INT,
     PaymentMethod NVARCHAR(50) ,
     CONSTRAINT FK_ApplicationPayment_Application FOREIGN KEY (ApplicationID)
         REFERENCES Application(ApplicationID)
@@ -292,14 +301,13 @@ BEGIN
                  END,
         IsValid = CASE 
                     WHEN i.Score >= 8 AND i.ExamDate >= DATEADD(YEAR, -2, GETDATE()) THEN 'Valid'
-                    ELSE 'Invalid'
+                    ELSE 'Expired'
                   END
     FROM ExamResult er
     INNER JOIN inserted i 
         ON er.ApplicantID = i.ApplicantID
        AND er.ExamTypeID = i.ExamTypeID;
 END;
-
 
 CREATE OR ALTER TRIGGER trg_UpdateApplicationRecommendation
 ON Application
@@ -317,5 +325,7 @@ BEGIN
     INNER JOIN inserted i 
         ON a.ApplicationID = i.ApplicationID;
 END;
+
+
 
 

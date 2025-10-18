@@ -1,4 +1,4 @@
-﻿
+
 -----------------------------------------
 --  Data Quality Checks for Bronze Layer
 -----------------------------------------
@@ -378,8 +378,9 @@ SELECT ExamName, COUNT(*) AS [Count] FROM Bronze.ExamType GROUP BY ExamName;
 SELECT Provider, COUNT(*) AS [Count] FROM Bronze.ExamType GROUP BY Provider;
 
 ------------------------------------------------------
--- ExamResult          --> Vailed: Y
-                       --> Invailed: N
+-- ExamResult          --> Vailed: Yes
+                       --> Invailed: No
+					   --> Exp:Expired
 ------------------------------------------------------
 SELECT Result, COUNT(*) AS [Count] FROM Bronze.ExamResult GROUP BY Result;
 SELECT IsValid, COUNT(*) AS [Count] FROM Bronze.ExamResult GROUP BY IsValid;
@@ -428,7 +429,7 @@ SELECT Result, COUNT(*) AS [Count] FROM Bronze.Interview GROUP BY Result;
 
 ------------------------------------------------------
 -- Application   --> Rej:Rejected
-                 --> PND : Pending
+                 --> Pend : Pending
 				 --> Acc:Accepted
 ------------------------------------------------------
 SELECT Comment, COUNT(*) AS [Count] FROM Bronze.Application GROUP BY Comment;
@@ -453,7 +454,7 @@ SELECT a.ApplicantID,
        e.ExamDate,
        i.InterviewDate,
        a.ApplicationDate
-FROM Silver.Application a
+FROM Bronze.Application a
 INNER JOIN Bronze.ExamResult e 
     ON a.ApplicantID = e.ApplicantID
 INNER JOIN Bronze.Interview i 
@@ -465,34 +466,45 @@ WHERE e.ExamDate > i.InterviewDate AND i.InterviewDate < a.ApplicationDate
 SELECT a.ApplicantID,
        e.Result AS ExamResult,
        i.Result AS InterviewResult
-FROM Silver.Application a
+FROM Bronze.Application a
 INNER JOIN Bronze.ExamResult e 
-    ON a.ApplicantID = e.ApplicantID
+    ON a.ApplicationID = e.ApplicationID
 INNER JOIN Bronze.Interview i 
-    ON a.ApplicantID = i.ApplicantID
-WHERE e.Result = 'Fail'
-  AND i.Result = 'Acc';
+    ON a.ApplicationID = i.ApplicationID
+WHERE e.Result = 'F'
+  AND i.Result = 'P';
+
 
 
 -- Retrieve applicants who failed the exam but their application was accepted based on recommendation.
-SELECT a.ApplicantID, 
+SELECT e.ApplicantID, 
+       a.ApplicantID,
+       e.ApplicationID,
+	   a.ApplicationID,
        e.Result, 
        a.Recommendation
 FROM Bronze.Application a
 INNER JOIN Bronze.ExamResult e 
-    ON a.ApplicantID = e.ApplicantID
-WHERE e.Result = 'Fail'
-  AND a.Recommendation = 'Acc';
+    ON a.ApplicationID = e.ApplicationID
+WHERE e.Result = 'F'
+  AND a.Recommendation = 'Acc' 
+
 
 
 -- Retrieve applicants who failed the interview but were accepted in the recommendation.
 SELECT a.ApplicantID,
        i.Result,
+	   a.ApplicationID,
+	   i.ApplicationID,
        a.Recommendation
 FROM Bronze.Application a
 INNER JOIN Bronze.Interview i 
-    ON a.ApplicantID = i.ApplicantID
-WHERE i.Result = 'REJ'
-  AND a.Recommendation = 'Acc';
+    ON a.ApplicationID = i.ApplicationID
+WHERE i.Result = 'F'
+  AND a.Recommendation = 'Acc' ;
+
+
+
+
 
 

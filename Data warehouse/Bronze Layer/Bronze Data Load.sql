@@ -15,9 +15,9 @@ BEGIN
         TRUNCATE TABLE cucasDWH.Bronze.Applicant;
         PRINT '>> Inserting data into Bronze.Applicant'
         SET @Start_Time = GETDATE();
-	  	  INSERT INTO cucasDWH.Bronze.Applicant 
-          SELECT *
-          FROM cucasDB.dbo.Applicant;
+	  INSERT INTO cucasDWH.Bronze.Applicant 
+      SELECT *
+    FROM cucasDB.dbo.Applicant;
               
          
         SET @End_Time = GETDATE();
@@ -218,4 +218,3 @@ BEGIN
 END
 
 Exec Bronze.bronze_Load
-

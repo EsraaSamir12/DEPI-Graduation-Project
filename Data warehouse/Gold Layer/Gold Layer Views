@@ -1,0 +1,221 @@
+
+
+-- Applicant Dim
+CREATE OR ALTER VIEW gold.ApplicantDIM AS
+SELECT *  , ROW_NUMBER() OVER (ORDER BY ApplicantID) AS ApplicantKey
+FROM SILVER.Applicant
+
+-- Payment Dim
+
+CREATE OR ALTER VIEW gold.ApplicationPaymentDIM AS
+SELECT * , ROW_NUMBER() OVER (ORDER BY PaymentID) AS ApplicationPaymentKey
+FROM Silver.ApplicationPayment
+
+
+-- FinancialSupport Dim
+CREATE OR ALTER  VIEW gold.FinancialSupportDIM
+AS
+SELECT
+    ROW_NUMBER() OVER (ORDER BY ApplicantFinancialSupportID) AS ApplicantFinancialSupportKey,
+     A.ApplicantFinancialSupportID,
+	 A.ApplicationID,
+	 A.RequestedSupportAmount,
+	 A.SupportReason,
+	 A.ApprovalStatus,
+	 S.SupportType,
+	 S.MaxAmount,
+	 S.Recurring,
+	 S.Duration
+FROM SILVER.ApplicantFinancialSupport  A
+LEFT JOIN Silver.Support S
+ON A.SupportID = S.SupportID
+
+-- Recommendation Dim
+CREATE OR ALTER VIEW gold.RecommendationDIM AS
+SELECT 
+      ROW_NUMBER() OVER (ORDER BY RecommendationID) AS RecommendationKey,
+      RecommendationID,
+      ApplicationID,
+	  LetterText,
+	  CanLearnQuickly,
+	  ProblemSolvingAbility,
+	  ResearchSkills,
+	  AcademicPerformance,
+	  FullName AS [Recommender Name],
+	  Email AS [Recommender Email],
+	  Position AS [Recommender Position],
+	  Institution AS [Recommender Institution]
+FROM Silver.RecommendationLetter RL
+LEFT JOIN Silver.Recommender R
+ON RL.RecommenderID = R.RecommenderID
+
+-- CommitteeMember Dim
+CREATE OR ALTER VIEW gold.CommitteeDIM AS
+SELECT
+	  C.CommitteeID, 
+	  C.CommitteeName,
+	  Name,
+	  Email,
+	  Status,
+	  CurrentWorkedLoad,
+	  Institution,
+	  Position,
+	  Specialization,
+	  Department,
+	  MaxReviewsCapacity,
+	  YearsOfExperience
+FROM Silver.CommitteMember  CM
+LEFT JOIN Silver.Committee C
+ON CM.CommitteeID = C.CommitteeID
+
+-- Scholarship DIM
+
+CREATE OR ALTER VIEW gold.ScholarshipDIM AS
+SELECT 
+     ROW_NUMBER() OVER (ORDER BY Schol_ID) AS ScholarshipKey,
+     Schol_ID,
+	 Program,
+	 TeachingLanguage,
+	 Degree,
+	 Duration,
+	 DurationCategoryType,
+	 StartMonth,
+	 StartYear,
+	 StartingDate,
+	 Category,
+	 U.University,
+	 U.Rating,
+	 U.Location,
+	 F.MinScholarshipCoverageTuition,
+	 F.MaxScholarshipCoverageTuition,
+	 F.ScholarshipCoverageAccommodation,
+	 F.ScholarshipCoverageLivingExpense,
+	 F.MinTuitionApplicantNeedToPay,
+	 F.MaxTuitionApplicantNeedToPay,
+	 F.MinApplicantNeedToPayAccommodation,
+	 F.MaxApplicantNeedToPayAccommodation,
+	 F.ApplicantNeedToPayAccommodationCategoryType,
+	 F.MinApplicantNeedToPayLivingExpense,
+	 F.MaxApplicantNeedToPayLivingExpense,
+	 F.LivingExpenseApplicantNeedToPayCategoryType,
+	 F.Tuition,
+	 F.TuitionCategoryType,
+	 F.DeadlineForPayment,
+	 F.MinApplicationServiceFeeByDollars,
+	 F.MaxApplicationServiceFeeByDollars
+FROM Silver.Scholarship S
+LEFT JOIN Silver.University U
+ON S.Uni_ID = U.Uni_ID
+LEFT JOIN Silver.FinanceDetails F
+ON S.FinanceID = F.FinanceID
+
+
+-- Exam Dim
+
+CREATE OR ALTER VIEW gold.ExamDim AS
+SELECT
+     ROW_NUMBER() OVER (ORDER BY ExamID) AS ExamKey,
+      R.ExamID,
+	  R.ApplicationID,
+	  R.ExamDate,
+	  R.IsValid,
+	  R.Result,
+	  R.Score,
+	  T.ExamName,
+	  T.Provider
+FROM Silver.ExamResult R
+LEFT JOIN Silver.ExamType T
+ON R.ExamTypeID = T.ExamTypeID
+
+-- Interview Dim 
+
+CREATE OR ALTER VIEW gold.InterviewDim  AS
+SELECT 
+     ROW_NUMBER() OVER (ORDER BY interviewID) AS interviewKey,
+      I.interviewID,
+      I.InterviewerID ,
+	  I.ApplicationID,
+	  I.InterviewDate,
+	  I.Location,
+	  I.Result,
+	  IR.Name,
+	  IR.Email,
+	  IR.Institution,
+	  IR.Position
+FROM Silver.Interview I
+LEFT JOIN Silver.Interviewer IR
+ON I.InterviewerID = IR.InterviewerID
+
+
+-- DateDIM
+
+
+CREATE OR ALTER VIEW gold.DateDIM
+AS
+WITH Numbers AS (
+    SELECT TOP (DATEDIFF(DAY, '2018-01-01', '2025-12-31') + 1)
+           ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) - 1 AS n
+    FROM sys.objects AS a
+    CROSS JOIN sys.objects AS b
+)
+SELECT 
+    CONVERT(INT, FORMAT(DATEADD(DAY, n, '2018-01-01'), 'yyyyMMdd')) AS DateKey,
+    CAST(DATEADD(DAY, n, '2018-01-01') AS DATE) AS FullDate,
+    DATEPART(DAY, DATEADD(DAY, n, '2018-01-01')) AS DayNumber,
+    DATENAME(WEEKDAY, DATEADD(DAY, n, '2018-01-01')) AS DayName,
+    DATEPART(MONTH, DATEADD(DAY, n, '2018-01-01')) AS MonthNumber,
+    DATENAME(MONTH, DATEADD(DAY, n, '2018-01-01')) AS MonthName,
+    DATEPART(QUARTER, DATEADD(DAY, n, '2018-01-01')) AS QuarterNumber,
+    DATEPART(YEAR, DATEADD(DAY, n, '2018-01-01')) AS YearNumber,
+    DATEPART(WEEK, DATEADD(DAY, n, '2018-01-01')) AS WeekNumber,
+    CASE 
+        WHEN DATENAME(WEEKDAY, DATEADD(DAY, n, '2018-01-01')) IN ('Friday', 'Saturday') 
+        THEN 1 ELSE 0 
+    END AS IsWeekend,
+    FORMAT(DATEADD(DAY, n, '2018-01-01'), 'MMM yyyy') AS MonthYear
+FROM Numbers;
+
+-- ApplicationFact
+
+CREATE OR ALTER VIEW Gold.ApplicationFact AS
+SELECT Distinct
+      A.ApplicationID,
+      AF.ApplicantKey,
+	  P.ApplicationPaymentKey,
+	  R.RecommendationKey,
+	  F.ApplicantFinancialSupportKey,
+	  SCHOL.ScholarshipKey,
+	  E.ExamKey,
+	  A.CommitteeID,
+	  I.interviewKey,
+	  A.ApplicationDate,
+	  A.Comment,
+	  A.Recommendation,
+	  A.Score,
+	  D.DateKey
+FROM SILVER.APPLICATION A
+LEFT JOIN Gold.ApplicantDIM AF
+    ON AF.ApplicantID=A.ApplicantID
+LEFT JOIN Gold.ScholarshipDIM SCHOL
+    ON SCHOL.Schol_ID=A.ScholID
+LEFT JOIN Gold.ExamDim E
+    ON E.ApplicationID = A.ApplicationID
+LEFT JOIN Gold.InterviewDim I
+    ON I.ApplicationID = A.ApplicationID
+LEFT JOIN Gold.ApplicationPaymentDIM P
+    ON P.ApplicationID = A.ApplicationID
+LEFT JOIN Silver.ApplicantFinancialSupport S
+    ON S.ApplicationID = A.ApplicationID
+LEFT JOIN Gold.CommitteeDIM C
+    ON C.CommitteeID=A.CommitteeID
+LEFT JOIN Gold.RecommendationDIM R
+    ON R.ApplicationID=A.ApplicationID
+LEFT JOIN Gold.FinancialSupportDIM F
+    ON F.ApplicationID =A.ApplicationID
+LEFT JOIN Gold.DateDIM D
+    ON D.FullDate=A.ApplicationDate
+
+
+
+
+

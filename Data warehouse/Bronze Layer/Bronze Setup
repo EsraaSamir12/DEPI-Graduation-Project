@@ -86,8 +86,9 @@ CREATE TABLE Bronze.Recommender (
 
 IF OBJECT_ID('Bronze.RecommendationLetter', 'U') IS NOT NULL DROP TABLE Bronze.RecommendationLetter;
 CREATE TABLE Bronze.RecommendationLetter (
-    RecommenderID INT,
-    ApplicantID INT,
+    RecommendationID INT ,
+	ApplicationID INT ,
+    RecommenderID INT ,
     LetterText NVARCHAR(MAX),
     CanLearnQuickly INT,
     ProblemSolvingAbility INT,
@@ -104,8 +105,9 @@ CREATE TABLE Bronze.ExamType (
 
 IF OBJECT_ID('Bronze.ExamResult', 'U') IS NOT NULL DROP TABLE Bronze.ExamResult;
 CREATE TABLE Bronze.ExamResult (
-    ExamTypeID INT,
-    ApplicantID INT,
+    ExamID INT ,
+    ExamTypeID INT ,
+	ApplicationID INT ,
     ExamDate DATE,
     Score DECIMAL(5,2),
     Result NVARCHAR(MAX),
@@ -123,11 +125,12 @@ CREATE TABLE Bronze.Support (
 
 IF OBJECT_ID('Bronze.ApplicantFinancialSupport', 'U') IS NOT NULL DROP TABLE Bronze.ApplicantFinancialSupport;
 CREATE TABLE Bronze.ApplicantFinancialSupport (
-    ApplicantID INT,
+    ApplicantFinancialSupportID INT,
+    ApplicationID INT,
     SupportID INT,
-    RequestedSupportAmount DECIMAL(18,2),
-    SupportReason NVARCHAR(MAX),
-    ApprovalStatus NVARCHAR(MAX)
+    RequestedSupportAmount DECIMAL(18,2) ,
+    SupportReason NVARCHAR(MAX) ,
+    ApprovalStatus NVARCHAR(MAX) 
 );
 
 IF OBJECT_ID('Bronze.Committee', 'U') IS NOT NULL DROP TABLE Bronze.Committee;
@@ -163,11 +166,12 @@ CREATE TABLE Bronze.Interviewer (
 
 IF OBJECT_ID('Bronze.Interview', 'U') IS NOT NULL DROP TABLE Bronze.Interview;
 CREATE TABLE Bronze.Interview (
-    InterviewerID INT,
-    ApplicantID INT,
+    InterviewID INT ,
+    InterviewerID INT ,
+	ApplicationID INT ,
     InterviewDate DATE,
-    Location NVARCHAR(MAX),
-    Result NVARCHAR(MAX)
+    Location NVARCHAR(MAX) ,
+    Result NVARCHAR(MAX) 
 );
 
 IF OBJECT_ID('Bronze.Application', 'U') IS NOT NULL DROP TABLE Bronze.Application;

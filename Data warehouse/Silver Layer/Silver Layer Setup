@@ -104,6 +104,7 @@ IF OBJECT_ID('Silver.ExamResult', 'U') IS NOT NULL DROP TABLE Silver.ExamResult;
 CREATE TABLE Silver.ExamResult (
     ExamTypeID INT,
     ApplicantID INT,
+	ApplicationID INT NOT NULL,
     ExamDate DATE,
     Score DECIMAL(5,2),
     Result NVARCHAR(MAX),
@@ -161,7 +162,7 @@ CREATE TABLE Silver.Interviewer (
     Name NVARCHAR(MAX),
     Position NVARCHAR(MAX),
     Institution NVARCHAR(MAX),
-    Email NVARCHAR(MAX),
+    Email NVARCHAR(MAX)
 );
 
 -- Interview
@@ -169,6 +170,7 @@ IF OBJECT_ID('Silver.Interview', 'U') IS NOT NULL DROP TABLE Silver.Interview;
 CREATE TABLE Silver.Interview (
     InterviewerID INT,
     ApplicantID INT,
+	ApplicationID INT NOT NULL,
     InterviewDate DATE,
     Location NVARCHAR(MAX),
     Result NVARCHAR(MAX),
@@ -197,6 +199,6 @@ CREATE TABLE Silver.ApplicationPayment (
     AccommodationPay DECIMAL(18,2),
     LivingExpensePay DECIMAL(18,2),
     ServiceFee DECIMAL(18,2),
-    PaymentMethod NVARCHAR(50)
+    TotalAmount DECIMAL(18,2),
+    PaymentMethod NVARCHAR(50),
 );
-

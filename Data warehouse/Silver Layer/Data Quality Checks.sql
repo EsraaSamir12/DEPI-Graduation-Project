@@ -456,9 +456,9 @@ SELECT a.ApplicantID,
        a.ApplicationDate
 FROM Bronze.Application a
 INNER JOIN Bronze.ExamResult e 
-    ON a.ApplicantID = e.ApplicantID
+    ON a.ApplicationID = e.ApplicationID
 INNER JOIN Bronze.Interview i 
-    ON a.ApplicantID = i.ApplicantID
+    ON a.ApplicationID = i.ApplicationID
 WHERE e.ExamDate > i.InterviewDate AND i.InterviewDate < a.ApplicationDate
 
 
@@ -477,7 +477,7 @@ WHERE e.Result = 'F'
 
 
 -- Retrieve applicants who failed the exam but their application was accepted based on recommendation.
-SELECT e.ApplicantID, 
+SELECT  
        a.ApplicantID,
        e.ApplicationID,
 	   a.ApplicationID,
@@ -504,7 +504,16 @@ WHERE i.Result = 'F'
   AND a.Recommendation = 'Acc' ;
 
 
+-- This query retrieves application payments where the payment date is later than the scholarship’s payment deadline, 
+-- and ensures that the scholarship started before the applicant’s application date. 
 
-
-
-
+SELECT p.PaymentDate, f.DeadlineForPayment, ApplicationDate, StartingDate
+FROM Silver.ApplicationPayment p
+LEFT JOIN Silver.Application a
+    ON p.ApplicationID = a.ApplicationID
+LEFT JOIN Silver.Scholarship s
+    ON a.ScholID = s.Schol_ID
+LEFT JOIN Silver.FinanceDetails f
+    ON s.FinanceID = f.FinanceID
+WHERE p.PaymentDate > f.DeadlineForPayment
+  AND s.StartingDate < a.ApplicationDate;

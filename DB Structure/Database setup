@@ -85,23 +85,23 @@ CREATE TABLE Recommender (
 );
 
 
-
 CREATE TABLE RecommendationLetter (
+    RecommendationID INT IDENTITY(1,1) PRIMARY KEY,
+	ApplicationID INT NOT NULL,
     RecommenderID INT NOT NULL,
-    ApplicantID INT NOT NULL,
     LetterText NVARCHAR(MAX) NULL,
     CanLearnQuickly INT,
     ProblemSolvingAbility INT,
     ResearchSkills INT,
     AcademicPerformance INT,
-    CONSTRAINT PK_Recommendation PRIMARY KEY (RecommenderID, ApplicantID),
     CONSTRAINT FK_Recommendation_Recommender FOREIGN KEY (RecommenderID)
         REFERENCES Recommender(RecommenderID)
         ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT FK_Recommendation_Applicant FOREIGN KEY (ApplicantID)
-        REFERENCES Applicant(ApplicantID)
+    CONSTRAINT FK_Recommendation_Applicantion FOREIGN KEY (ApplicationID)
+        REFERENCES Application(ApplicationID)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
+
 
 
 
@@ -112,22 +112,16 @@ CREATE TABLE ExamType (
     Provider NVARCHAR(255) NULL
 );
 
-
-
 CREATE TABLE ExamResult (
+    ExamID INT IDENTITY(1,1) PRIMARY KEY,
     ExamTypeID INT NOT NULL,
-    ApplicantID INT NOT NULL,
 	ApplicationID INT NOT NULL,
     ExamDate DATE,
     Score DECIMAL(5,2),
     Result NVARCHAR(MAX),
     IsValid NVARCHAR(MAX),
-    CONSTRAINT PK_ExamResult PRIMARY KEY (ExamTypeID, ApplicantID,ApplicationID),
     CONSTRAINT FK_ExamResult_ExamType FOREIGN KEY (ExamTypeID)
         REFERENCES ExamType(ExamTypeID)
-        ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT FK_ExamResult_Applicant FOREIGN KEY (ApplicantID)
-        REFERENCES Applicant(ApplicantID)
         ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT FK_ExamResult_Applicantion FOREIGN KEY (ApplicationID)
         REFERENCES Application(ApplicationID)
@@ -142,14 +136,14 @@ CREATE TABLE Support (
 );
 
 CREATE TABLE ApplicantFinancialSupport (
-    ApplicantID INT NOT NULL,
+    ApplicantFinancialSupportID INT IDENTITY(1,1) PRIMARY KEY,
+    ApplicationID INT NOT NULL,
     SupportID INT NOT NULL,
     RequestedSupportAmount DECIMAL(18,2) ,
     SupportReason NVARCHAR(MAX) ,
     ApprovalStatus NVARCHAR(MAX) , 
-    CONSTRAINT PK_ApplicantSupport PRIMARY KEY (ApplicantID, SupportID),
-    CONSTRAINT FK_ApplicantSupport_Applicant FOREIGN KEY (ApplicantID)
-        REFERENCES Applicant(ApplicantID)
+    CONSTRAINT FK_ApplicantSupport_Application FOREIGN KEY (ApplicationID)
+        REFERENCES Application(ApplicationID)
         ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT FK_ApplicantSupport_Support FOREIGN KEY (SupportID)
         REFERENCES Support(SupportID)
@@ -189,18 +183,14 @@ CREATE TABLE Interviewer (
 );
 
 CREATE TABLE Interview (
+    InterviewID INT IDENTITY(1,1) PRIMARY KEY,
     InterviewerID INT NOT NULL,
-    ApplicantID INT NOT NULL,
 	ApplicationID INT NOT NULL,
     InterviewDate DATE,
     Location NVARCHAR(MAX) ,
     Result NVARCHAR(MAX) ,
-    CONSTRAINT PK_Interview PRIMARY KEY (InterviewerID, ApplicantID,ApplicationID),
     CONSTRAINT FK_Interview_Interviewer FOREIGN KEY (InterviewerID)
         REFERENCES Interviewer(InterviewerID)
-        ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT FK_Interview_Applicant FOREIGN KEY (ApplicantID)
-        REFERENCES Applicant(ApplicantID)
         ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT FK_Interview_Applicantion FOREIGN KEY (ApplicationID)
         REFERENCES Application(ApplicationID)

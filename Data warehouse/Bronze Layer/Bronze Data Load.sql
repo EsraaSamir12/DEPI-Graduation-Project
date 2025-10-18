@@ -16,7 +16,6 @@ BEGIN
         PRINT '>> Inserting data into Bronze.Applicant'
         SET @Start_Time = GETDATE();
 	  INSERT INTO cucasDWH.Bronze.Applicant (
-	  ApplicantID,
        FullName,
        Nationality,
        CurrentLevel,
@@ -32,9 +31,8 @@ BEGIN
        Country,
        City
       )
-   SELECT
-         ApplicantID,
-         FullName,
+   SELECT 
+        FullName,
          Nationality,
          CurrentLevel,
          YearOfStudy,

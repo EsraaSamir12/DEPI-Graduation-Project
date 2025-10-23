@@ -50,7 +50,6 @@ BEGIN
                     THEN 1 ELSE 0 
                 END
         FROM Bronze.Applicant;
-
         SET @End_Time = GETDATE();
         PRINT '>> Load Duration (Applicant): ' + CAST(DATEDIFF(SECOND, @Start_Time, @End_Time) AS NVARCHAR) + ' seconds';
         PRINT '-----------------------------';
@@ -184,19 +183,52 @@ BEGIN
 
         INSERT INTO Silver.RecommendationLetter
         SELECT 
-            RecommenderID, 
-            ApplicantID, 
-            LetterText, 
-            CanLearnQuickly, 
-            ProblemSolvingAbility, 
-            ResearchSkills, 
-            AcademicPerformance
+            *
         FROM Bronze.RecommendationLetter;
 
         SET @End_Time = GETDATE();
         PRINT '>> Load Duration (RecommendationLetter): ' + CAST(DATEDIFF(SECOND, @Start_Time, @End_Time) AS NVARCHAR) + ' seconds';
         PRINT '-----------------------------';
 
+        -------------------------------
+		-- ApplicantFinancialSupport
+        -------------------------------
+        PRINT '>> Truncating table Silver.ApplicantFinancialSupport'
+        TRUNCATE TABLE cucasDWH.Silver.ApplicantFinancialSupport;
+        PRINT '>> Inserting data into Silver.ApplicantFinancialSupport'
+        SET @Start_Time = GETDATE();
+        INSERT INTO cucasDWH.Silver.ApplicantFinancialSupport
+        SELECT 
+		     ApplicantFinancialSupportID,
+			 ApplicationID,
+			 SupportID,
+			 RequestedSupportAmount,
+			 SupportReason,
+			 CASE ApprovalStatus 
+			      WHEN 'APV' THEN 'Approved'
+				  WHEN 'REJ' THEN 'Rejected'
+		     ELSE  ApprovalStatus
+			 END AS ApprovalStatus
+        FROM Bronze.ApplicantFinancialSupport;
+        SET @End_Time = GETDATE();
+        PRINT '>> Load Duration: ' + CAST(DATEDIFF(SECOND,@Start_Time,@End_Time) AS NVARCHAR) + ' seconds';
+        PRINT '-----------------------------'
+
+
+		-------------------------------
+		-- Support
+        -------------------------------
+        PRINT '>> Truncating table Silver.Support'
+        TRUNCATE TABLE cucasDWH.Silver.ApplicantFinancialSupport;
+        PRINT '>> Inserting data into Silver.Support'
+        SET @Start_Time = GETDATE();
+        INSERT INTO cucasDWH.Silver.Support
+        SELECT 
+		     *
+        FROM Bronze.Support;
+        SET @End_Time = GETDATE();
+        PRINT '>> Load Duration: ' + CAST(DATEDIFF(SECOND,@Start_Time,@End_Time) AS NVARCHAR) + ' seconds';
+        PRINT '-----------------------------'
 
         -------------------------------
         -- ExamType
@@ -225,10 +257,10 @@ BEGIN
         PRINT '>> Inserting data into Silver.ExamResult';
         SET @Start_Time = GETDATE();
 
-        INSERT INTO Silver.ExamResult (ExamTypeID, ApplicantID, ApplicationID, ExamDate, Score, Result, IsValid)
+        INSERT INTO Silver.ExamResult (ExamID,ExamTypeID, ApplicationID, ExamDate, Score, Result, IsValid)
         SELECT 
+		    ExamID,
             ExamTypeID,
-            ApplicantID,
             ApplicationID,  
             ExamDate,
             Score,
@@ -279,8 +311,8 @@ BEGIN
 
         INSERT INTO Silver.Interview 
         SELECT  
+		    InterviewID,
             InterviewerID,
-            ApplicantID,
             ApplicationID,
             InterviewDate,
             Location,
@@ -290,11 +322,35 @@ BEGIN
                 ELSE Result
             END
         FROM Bronze.Interview;
-
         SET @End_Time = GETDATE();
         PRINT '>> Load Duration (Interview): ' + CAST(DATEDIFF(SECOND, @Start_Time, @End_Time) AS NVARCHAR) + ' seconds';
         PRINT '-----------------------------';
 
+        -------------------------------
+        -- Application
+        -------------------------------       
+        TRUNCATE TABLE cucasDWH.Silver.Application;
+        PRINT '>> Inserting data into Silver.Application'
+        SET @Start_Time = GETDATE();
+        INSERT INTO cucasDWH.Silver.Application
+        SELECT 
+		     ApplicationID,
+			 ApplicantID,
+			 ScholID,
+			 ApplicationDate,
+			 CommitteeID,
+			 Score,
+			 Comment,
+			 CASE Recommendation
+			 WHEN 'Acc' THEN 'Accpeted'
+			 WHEN 'Rej' THEN 'Rejected'
+			 WHEN 'Pend' Then 'Pending'
+			 ELSE Recommendation
+			 END
+        FROM Bronze.Application;
+        SET @End_Time = GETDATE();
+        PRINT '>> Load Duration: ' + CAST(DATEDIFF(SECOND,@Start_Time,@End_Time) AS NVARCHAR) + ' seconds';
+	    PRINT '-----------------------------';
 
         -------------------------------
         -- ApplicationPayment
@@ -305,7 +361,6 @@ BEGIN
         PRINT '>> Inserting data into Silver.ApplicationPayment';
         SET @Start_Time = GETDATE();
 
-        
         INSERT INTO Silver.ApplicationPayment 
         SELECT *
         FROM Bronze.ApplicationPayment;
@@ -313,6 +368,48 @@ BEGIN
         SET @End_Time = GETDATE();
         PRINT '>> Load Duration (ApplicationPayment): ' + CAST(DATEDIFF(SECOND, @Start_Time, @End_Time) AS NVARCHAR) + ' seconds';
         PRINT '-----------------------------';
+
+		 -- Committee
+        PRINT '>> Truncating table Silver.Committee'
+        TRUNCATE TABLE cucasDWH.Silver.Committee;
+        PRINT '>> Inserting data into Silver.Committee'
+        SET @Start_Time = GETDATE();
+        INSERT INTO cucasDWH.Silver.Committee
+        SELECT *
+        FROM Bronze.Committee;
+        SET @End_Time = GETDATE();
+        PRINT '>> Load Duration: ' + CAST(DATEDIFF(SECOND,@Start_Time,@End_Time) AS NVARCHAR) + ' seconds';
+        PRINT '-----------------------------'
+
+        -- CommitteMember
+        PRINT '>> Truncating table Silver.CommitteMember'
+        TRUNCATE TABLE cucasDWH.Silver.CommitteMember;
+        PRINT '>> Inserting data into Silver.CommitteMember'
+        SET @Start_Time = GETDATE();
+        INSERT INTO cucasDWH.Silver.CommitteMember
+        SELECT 
+		      ReviewerID,
+			  Name,
+			  Email,
+			  CASE status
+			  WHEN 'Act' THEN 'Active'
+			  else 'Inactive'
+			  END,
+			  CurrentWorkedLoad,
+			  Institution,
+			  Position,
+			  Specialization,
+			  Department,
+			  MaxReviewsCapacity,
+			  YearsOfExperience,
+			  CommitteeID
+        FROM Bronze.CommitteMember;
+        SET @End_Time = GETDATE();
+        PRINT '>> Load Duration: ' + CAST(DATEDIFF(SECOND,@Start_Time,@End_Time) AS NVARCHAR) + ' seconds';
+        PRINT '-----------------------------'
+
+
+
 
 
         -------------------------------
@@ -334,6 +431,10 @@ GO
 
 -- Execute procedure
 EXEC Silver.silver_Load;
+
+
+
+
 
 
 

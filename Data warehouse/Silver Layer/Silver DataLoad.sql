@@ -219,7 +219,7 @@ BEGIN
 		-- Support
         -------------------------------
         PRINT '>> Truncating table Silver.Support'
-        TRUNCATE TABLE cucasDWH.Silver.ApplicantFinancialSupport;
+        TRUNCATE TABLE cucasDWH.Silver.Support;
         PRINT '>> Inserting data into Silver.Support'
         SET @Start_Time = GETDATE();
         INSERT INTO cucasDWH.Silver.Support
@@ -333,7 +333,7 @@ BEGIN
         PRINT '>> Inserting data into Silver.Application'
         SET @Start_Time = GETDATE();
         INSERT INTO cucasDWH.Silver.Application
-        SELECT 
+        SELECT  
 		     ApplicationID,
 			 ApplicantID,
 			 ScholID,
@@ -351,7 +351,6 @@ BEGIN
         SET @End_Time = GETDATE();
         PRINT '>> Load Duration: ' + CAST(DATEDIFF(SECOND,@Start_Time,@End_Time) AS NVARCHAR) + ' seconds';
 	    PRINT '-----------------------------';
-
         -------------------------------
         -- ApplicationPayment
         -------------------------------
@@ -431,10 +430,3 @@ GO
 
 -- Execute procedure
 EXEC Silver.silver_Load;
-
-
-
-
-
-
-

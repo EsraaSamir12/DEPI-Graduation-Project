@@ -508,12 +508,12 @@ WHERE i.Result = 'F'
 -- and ensures that the scholarship started before the applicant’s application date. 
 
 SELECT p.PaymentDate, f.DeadlineForPayment, ApplicationDate, StartingDate
-FROM Silver.ApplicationPayment p
-LEFT JOIN Silver.Application a
+FROM Bronze.ApplicationPayment p
+LEFT JOIN Bronze.Application a
     ON p.ApplicationID = a.ApplicationID
-LEFT JOIN Silver.Scholarship s
+LEFT JOIN Bronze.Scholarship s
     ON a.ScholID = s.Schol_ID
-LEFT JOIN Silver.FinanceDetails f
+LEFT JOIN Bronze.FinanceDetails f
     ON s.FinanceID = f.FinanceID
 WHERE p.PaymentDate > f.DeadlineForPayment
   AND s.StartingDate < a.ApplicationDate;

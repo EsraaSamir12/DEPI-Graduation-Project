@@ -5,6 +5,7 @@ CREATE OR ALTER VIEW gold.ApplicantDIM AS
 SELECT *  , ROW_NUMBER() OVER (ORDER BY ApplicantID) AS ApplicantKey
 FROM SILVER.Applicant
 
+
 -- Payment Dim
 
 CREATE OR ALTER VIEW gold.ApplicationPaymentDIM AS
@@ -176,45 +177,40 @@ SELECT
 FROM Numbers;
 
 -- ApplicationFact
-
 CREATE OR ALTER VIEW Gold.ApplicationFact AS
-SELECT Distinct
-      A.ApplicationID,
-      AF.ApplicantKey,
-	  P.ApplicationPaymentKey,
-	  R.RecommendationKey,
-	  F.ApplicantFinancialSupportKey,
-	  SCHOL.ScholarshipKey,
-	  E.ExamKey,
-	  A.CommitteeID,
-	  I.interviewKey,
-	  A.ApplicationDate,
-	  A.Comment,
-	  A.Recommendation,
-	  A.Score,
-	  D.DateKey
-FROM SILVER.APPLICATION A
-LEFT JOIN Gold.ApplicantDIM AF
-    ON AF.ApplicantID=A.ApplicantID
-LEFT JOIN Gold.ScholarshipDIM SCHOL
-    ON SCHOL.Schol_ID=A.ScholID
-LEFT JOIN Gold.ExamDim E
-    ON E.ApplicationID = A.ApplicationID
-LEFT JOIN Gold.InterviewDim I
-    ON I.ApplicationID = A.ApplicationID
-LEFT JOIN Gold.ApplicationPaymentDIM P
-    ON P.ApplicationID = A.ApplicationID
-LEFT JOIN Silver.ApplicantFinancialSupport S
-    ON S.ApplicationID = A.ApplicationID
-LEFT JOIN Gold.CommitteeDIM C
-    ON C.CommitteeID=A.CommitteeID
-LEFT JOIN Gold.RecommendationDIM R
-    ON R.ApplicationID=A.ApplicationID
-LEFT JOIN Gold.FinancialSupportDIM F
-    ON F.ApplicationID =A.ApplicationID
-LEFT JOIN Gold.DateDIM D
-    ON D.FullDate=A.ApplicationDate
-
+WITH DistinctApplications AS (
+    SELECT DISTINCT
+        A.ApplicationID,
+        AF.ApplicantKey,
+        P.ApplicationPaymentKey,
+        R.RecommendationKey,
+        F.ApplicantFinancialSupportKey,
+        SCHOL.ScholarshipKey,
+        E.ExamKey,
+        A.CommitteeID,
+        I.InterviewKey,
+		I.Result,
+        A.ApplicationDate,
+        A.Comment,
+        A.Recommendation,
+        A.Score,
+        D.DateKey
+    FROM SILVER.APPLICATION A
+    LEFT JOIN Gold.ApplicantDIM AF ON AF.ApplicantID = A.ApplicantID
+    LEFT JOIN Gold.ScholarshipDIM SCHOL ON SCHOL.Schol_ID = A.ScholID
+    LEFT JOIN Gold.ExamDim E ON E.ApplicationID = A.ApplicationID
+    LEFT JOIN Gold.InterviewDim I ON I.ApplicationID = A.ApplicationID
+    LEFT JOIN Gold.ApplicationPaymentDIM P ON P.ApplicationID = A.ApplicationID
+    LEFT JOIN Silver.ApplicantFinancialSupport S ON S.ApplicationID = A.ApplicationID
+    LEFT JOIN Gold.CommitteeDIM C ON C.CommitteeID = A.CommitteeID
+    LEFT JOIN Gold.RecommendationDIM R ON R.ApplicationID = A.ApplicationID
+    LEFT JOIN Gold.FinancialSupportDIM F ON F.ApplicationID = A.ApplicationID
+    LEFT JOIN Gold.DateDIM D ON D.FullDate = A.ApplicationDate
+)
+SELECT
+    ROW_NUMBER() OVER (ORDER BY ApplicationID) AS ApplicationKey,
+    *
+FROM DistinctApplications;
 
 
 

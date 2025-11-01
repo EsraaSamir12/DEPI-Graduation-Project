@@ -1,8 +1,5 @@
 Create database cucasDB
 USE cucasDB
-USE master;
-ALTER DATABASE cucasDB SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-DROP DATABASE cucasDB;
 
 CREATE TABLE Applicant (
     ApplicantID INT IDENTITY(1,1) PRIMARY KEY,
@@ -244,9 +241,13 @@ BEGIN
             ELSE 'Rejected'
         END
     FROM ApplicantFinancialSupport afs
-    INNER JOIN inserted i ON afs.ApplicantID = i.ApplicantID AND afs.SupportID = i.SupportID
-    INNER JOIN Support s ON afs.SupportID = s.SupportID;
+    INNER JOIN inserted i 
+        ON afs.ApplicantFinancialSupportID = i.ApplicantFinancialSupportID
+    INNER JOIN Support s 
+        ON afs.SupportID = s.SupportID;
 END;
+GO
+
 
 CREATE OR ALTER TRIGGER trg_CheckReviewerCapacity
 ON Application
@@ -295,9 +296,10 @@ BEGIN
                   END
     FROM ExamResult er
     INNER JOIN inserted i 
-        ON er.ApplicantID = i.ApplicantID
-       AND er.ExamTypeID = i.ExamTypeID;
+        ON er.ExamID = i.ExamID; 
 END;
+GO
+
 
 CREATE OR ALTER TRIGGER trg_UpdateApplicationRecommendation
 ON Application
@@ -307,15 +309,11 @@ BEGIN
     UPDATE a
     SET Recommendation = CASE
                             WHEN i.Score >= 5 THEN 'Accepted'
-                            WHEN I.Score<5 THEN 'Rejected'
-							ELSE 'Pending'
-
+                            WHEN i.Score < 5 THEN 'Rejected'
+                            ELSE 'Pending'
                          END
     FROM Application a
     INNER JOIN inserted i 
         ON a.ApplicationID = i.ApplicationID;
 END;
-
-
-
-
+GO
